@@ -68,7 +68,10 @@ jobs:
             for f in $CONFLICTED; do
               case "$f" in
                 package-lock.json|package.json|repo-tokens/badge.svg|.github/workflows/*)
-                  git checkout --theirs "$f"
+                  # If upstream deleted the file (modify/delete conflict), keep our version
+                  if ! git checkout --theirs "$f" 2>/dev/null; then
+                    git checkout --ours "$f"
+                  fi
                   git add "$f"
                   ;;
                 .env.example)
